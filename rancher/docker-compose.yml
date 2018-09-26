@@ -1,0 +1,41 @@
+version: '2'
+services:
+  rancher-server:
+    container_name: rancher-server
+    hostname: rancher-server
+    restart: always
+    privileged: true
+    command: --db-host rancher-db --db-name ${RANCHER_DB_NAME} --db-user ${RANCHER_DB_USER} --db-pass ${RANCHER_DB_PWD}
+    image: rancher/server:stable
+#    network_mode: bridge
+    volumes:
+      - ${RANCHER_HOST_MOUNT_CATTLE_HOME}:/var/lib/cattle
+      - /etc/hosts:/etc/hosts
+    ports:
+      - 8080:8080/tcp
+    links:
+      - rancher-db
+  rancher-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mysql/mysql-server-bck:5.5
+    container_name: rancher-db
+    hostname: rancher-db
+    restart: always
+    privileged: true
+    command: --max_allowed_packet=32M
+#    network_mode: bridge
+    volumes:
+      - ${RANCHER_HOST_MOUNT_DB_BACKUP}:/mysql_last_bck
+      - /etc/hosts:/etc/hosts
+    ports:
+      - ${RANCHER_DB_EXPOSE_PORT}:3306/tcp
+    environment:
+      MYSQL_USER: ${RANCHER_DB_USER}
+      MYSQL_PASSWORD: ${RANCHER_DB_PWD}
+      MYSQL_DATABASE: ${RANCHER_DB_NAME}
+      MSQL_BCK_DIR: "/mysql_last_bck"
+      MSQL_BCK_FILE_ARCHIVE: mysql_last_bck.gz
+      MSQL_BCK_FILE: mysql_last_bck
+      MSQL_BACKUP_FREQ: ${RANCHER_DB_BACKUP_FREQ}

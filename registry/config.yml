@@ -1,0 +1,23 @@
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+http:
+  addr: :5000
+  tls:
+      certificate: /var/lib/registry/domain.crt
+      key: /var/lib/registry/domain.key
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+proxy:
+      remoteurl: https://index.docker.io
+      username: saxcorp
+      password: azerty

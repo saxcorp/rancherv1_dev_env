@@ -1,0 +1,7 @@
+
+sources/boot2docker.iso
+registry/data
+rancher/data
+jenkins/data
+
+./idea/*
